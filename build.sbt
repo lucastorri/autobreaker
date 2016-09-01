@@ -2,7 +2,13 @@ name := "autobreaker"
 
 organization := "com.unstablebuild"
 
-version := "1.0-SNAPSHOT"
+organizationName := "unstablebuild.com"
+
+version := "0.5.0"
+
+homepage := Some(url("https://github.com/lucastorri/autobreaker"))
+
+organizationHomepage := Some(url("http://unstablebuild.com"))
 
 scalaVersion := "2.11.8"
 
@@ -19,3 +25,29 @@ resolvers ++= Seq(
 )
 
 licenses := Seq("MIT License" -> url("https://opensource.org/licenses/MIT"))
+
+publishMavenStyle := true
+
+publishTo := {
+  val nexus = "https://oss.sonatype.org/"
+  if (isSnapshot.value) Some("snapshots" at nexus + "content/repositories/snapshots")
+  else Some("releases"  at nexus + "service/local/staging/deploy/maven2")
+}
+
+publishArtifact in Test := false
+
+pomIncludeRepository := (_ => false)
+
+pomExtra := (
+  <scm>
+    <url>git@github.com:lucastorri/autobreaker.git</url>
+    <connection>scm:git:git@github.com:lucastorri/autobreaker.git</connection>
+  </scm>
+  <developers>
+    <developer>
+      <id>lucastorri</id>
+      <name>Lucas Torri</name>
+      <url>http://unstablebuild.com</url>
+    </developer>
+  </developers>
+)
