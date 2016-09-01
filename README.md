@@ -14,11 +14,21 @@ trait MyService {
   def add(a: Int, b: Int): Future[Int]
 }
 
-val realService: MyService = ???
-val serviceWithCircuitBreaker: MyService = AutoBreaker.proxy(realService)
+class FailingService extends MyService {
+  override def add(a: Int, b: Int): Future[Int] = Future.failed(new Exception("error"))
+}
 
-// Use it normally, and if too many errors occur, the method will start to fail fast
+val realService: MyService = new FailingService
+val serviceWithCircuitBreaker = AutoBreaker.proxy(realService)
+
+// Call it a few times, forcing failures
+(1 to 10).foreach { _ => serviceWithCircuitBreaker.add(11, 23) }
+
+// Try again and see that the service isn't called
 serviceWithCircuitBreaker.add(11, 23)
+// [warn] e.c.CircuitBreakerProxy - Attempt 1 of operation interrupted: akka.pattern.CircuitBreakerOpenException: Circuit Breaker is open; calls are failing fast
+// akka.pattern.CircuitBreakerOpenException: Circuit Breaker is open; calls are failing fast
+
 ```
 
 Please check the unit tests for more examples.
@@ -29,7 +39,7 @@ Please check the unit tests for more examples.
 To use it with [SBT](http://www.scala-sbt.org/), add the following to your `build.sbt` file:
 
 ```scala
-libraryDependencies += TODO
+libraryDependencies += "com.unstablebuild" %% "autobreaker-guice" % "0.5.0"
 ```
 
 
@@ -46,7 +56,6 @@ case class CircuitBreakerSettings(
   resetTimeout: FiniteDuration = 1.minute,
   knownError: Throwable => Boolean = _ => false
 )
-
 ```
 
 Please see `atmos` and `akka` documentations for further reference.
