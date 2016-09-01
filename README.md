@@ -21,7 +21,7 @@ class FailingService extends MyService {
 val realService: MyService = new FailingService
 val serviceWithCircuitBreaker = AutoBreaker.proxy(realService)
 
-// Call it a few times, forcing failures
+// Make it fail a few times
 (1 to 10).foreach { _ => serviceWithCircuitBreaker.add(11, 23) }
 
 // Try again and see that the service isn't called
