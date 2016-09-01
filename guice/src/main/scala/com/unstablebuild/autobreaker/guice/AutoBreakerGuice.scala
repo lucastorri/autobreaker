@@ -5,10 +5,11 @@ import java.lang.annotation.Annotation
 import akka.actor.Scheduler
 import com.google.inject._
 import com.google.inject.spi._
-import com.unstablebuild.autobreaker.AutoBreaker
+import com.unstablebuild.autobreaker.{AutoBreaker, Settings}
 
 import scala.collection.JavaConversions._
 import scala.concurrent.ExecutionContext
+import scala.util.Try
 
 object AutoBreakerGuice {
 
@@ -45,9 +46,11 @@ object AutoBreakerGuice {
     implicit lazy val ec = injector.getInstance(classOf[ExecutionContext])
     implicit lazy val scheduler = injector.getInstance(classOf[Scheduler])
 
+    def settings: Settings = Try(injector.getInstance(classOf[Settings])).getOrElse(AutoBreaker.defaultSettings)
+
     def instance: AnyRef
 
-    override def get(): AnyRef = AutoBreaker.proxy(instance)
+    override def get(): AnyRef = AutoBreaker.proxy(instance, settings)
 
   }
 

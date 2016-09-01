@@ -39,7 +39,7 @@ Please check the unit tests for more examples.
 To use it with [SBT](http://www.scala-sbt.org/), add the following to your `build.sbt` file:
 
 ```scala
-libraryDependencies += "com.unstablebuild" %% "autobreaker" % "0.5.0"
+libraryDependencies += "com.unstablebuild" %% "autobreaker" % "0.5.1"
 ```
 
 
@@ -70,7 +70,7 @@ Please see `atmos` and `akka` documentations for further reference.
 In order to use it, you need to add the following to your dependencies:
 
 ```scala
-libraryDependencies += "com.unstablebuild" %% "autobreaker-guice" % "0.5.0"
+libraryDependencies += "com.unstablebuild" %% "autobreaker-guice" % "0.5.1"
 ```
 
 Afterwards, it can be used like this:
@@ -83,11 +83,7 @@ class DownstreamService extends MyService {
 }
 
 class TestModule extends AbstractModule {
-
-  override def configure(): Unit = {
-    bind(classOf[MyService]).to(classOf[DownstreamService])
-  }
-
+  override def configure(): Unit = bind(classOf[MyService]).to(classOf[DownstreamService])
 }
 
 val module = new TestModule()
