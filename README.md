@@ -39,7 +39,7 @@ Please check the unit tests for more examples.
 To use it with [SBT](http://www.scala-sbt.org/), add the following to your `build.sbt` file:
 
 ```scala
-libraryDependencies += "com.unstablebuild" %% "autobreaker-guice" % "0.5.0"
+libraryDependencies += "com.unstablebuild" %% "autobreaker" % "0.5.0"
 ```
 
 
@@ -61,3 +61,38 @@ case class CircuitBreakerSettings(
 Please see `atmos` and `akka` documentations for further reference.
 
 `knownError` is used to decide if, given an exception type returned by the method, it should be retried or not, or counted as a failure on the circuit breaker. This allows the usage of custom exceptions to communicate the users about errors that don't affect the used method. For instance, you can decide that an exception communicating validation issues should not be considered as bad as a failure when communicating with a downstream system.
+
+
+## Guice Integration
+
+`autobreaker-guice` allows you to annotate your implementations with `@WithCircuitBreaker` and modify your [Guice](https://github.com/google/guice) module to automatically wrap the generated objects.
+
+In order to use it, you need to add the following to your dependencies:
+
+```scala
+libraryDependencies += "com.unstablebuild" %% "autobreaker-guice" % "0.5.0"
+```
+
+Afterwards, it can be used like this:
+
+```scala
+
+@WithCircuitBreaker
+class DownstreamService extends MyService {
+  override def add(a: Int, b: Int): Future[Int] = ???
+}
+
+class TestModule extends AbstractModule {
+
+  override def configure(): Unit = {
+    bind(classOf[MyService]).to(classOf[DownstreamService])
+  }
+
+}
+
+val module = new TestModule()
+val injector = Guice.createInjector(AutoBreakerGuice.prepare(module))
+val service = injector.getInstance(classOf[MyService])
+```
+
+An `ExecutionContext` and `Scheduler` should be available on your bindings.
