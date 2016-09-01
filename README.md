@@ -11,9 +11,7 @@ It is based on [atmos](https://github.com/zmanio/atmos) and [Akka's Circuit Brea
 import com.unstablebuild.autobreaker._
 
 trait MyService {
-
   def add(a: Int, b: Int): Future[Int]
-
 }
 
 val realService: MyService = ???
@@ -33,3 +31,22 @@ To use it with [SBT](http://www.scala-sbt.org/), add the following to your `buil
 ```scala
 libraryDependencies += TODO
 ```
+
+
+## Configuration
+
+The following settings (and their default values) are available:
+
+```scala
+case class CircuitBreakerSettings(
+  totalAttempts: TerminationPolicy = 3.attempts,
+  backoffPolicy: BackoffPolicy = LimitedExponentialBackoffPolicy(2.minutes, 1.second),
+  maxFailures: Int = 5,
+  callTimeout: FiniteDuration = 10.seconds,
+  resetTimeout: FiniteDuration = 1.minute,
+  knownError: Throwable => Boolean = _ => false
+)
+
+```
+
+Please see `atmos` and `akka` documentations for further reference.
