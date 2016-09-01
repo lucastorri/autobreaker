@@ -1,4 +1,6 @@
-`autobreaker` wraps your objects and intercepts all methods returning [`Future`s](http://www.scala-lang.org/api/current/#scala.concurrent.Future) with a [circuit breaker](http://martinfowler.com/bliki/CircuitBreaker.html).
+# autobreaker
+
+`autobreaker` is a [Scala](http://scala-lang.org/) library that wraps your objects and intercepts all methods returning [`Future`s](http://www.scala-lang.org/api/current/#scala.concurrent.Future) with a [circuit breaker](http://martinfowler.com/bliki/CircuitBreaker.html).
 
 It is based on [atmos](https://github.com/zmanio/atmos) and [Akka's Circuit Breaker](http://doc.akka.io/docs/akka/current/common/circuitbreaker.html), using [Java's Proxy](https://docs.oracle.com/javase/8/docs/api/java/lang/reflect/Proxy.html) to intercept method calls.
 
@@ -15,7 +17,7 @@ trait MyService {
 }
 
 val realService: MyService = ???
-val serviceWithCircuitBreaker: MyService = CircuitBreakerProxy.proxy(realService)
+val serviceWithCircuitBreaker: MyService = AutoBreaker.proxy(realService)
 
 // Use it normally, and if too many errors occur, the method will start to fail fast
 serviceWithCircuitBreaker.add(11, 23)

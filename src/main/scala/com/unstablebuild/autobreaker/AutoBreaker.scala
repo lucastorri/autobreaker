@@ -6,7 +6,7 @@ import akka.actor.Scheduler
 
 import scala.concurrent.ExecutionContext
 
-object CircuitBreakerProxy {
+object AutoBreaker {
 
   val defaultSettings = CircuitBreakerSettings()
 

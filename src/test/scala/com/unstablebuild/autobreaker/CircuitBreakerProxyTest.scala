@@ -103,7 +103,7 @@ class CircuitBreakerProxyTest extends FlatSpec with MustMatchers with ScalaFutur
     val error: Throwable = new Exception("failing")
 
     lazy val realService = new ConfigurableTestService(error)
-    lazy val serviceProxy = CircuitBreakerProxy.proxy[TestService](realService, settings)
+    lazy val serviceProxy = AutoBreaker.proxy[TestService](realService, settings)
 
   }
 
