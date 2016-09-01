@@ -59,3 +59,5 @@ case class CircuitBreakerSettings(
 ```
 
 Please see `atmos` and `akka` documentations for further reference.
+
+`knownError` is used to decide if, given an exception type returned by the method, it should be retried or not, or counted as a failure on the circuit breaker. This allows the usage of custom exceptions to communicate the users about errors that don't affect the used method. For instance, you can decide that an exception communicating validation issues should not be considered as bad as a failure when communicating with a downstream system.
