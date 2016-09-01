@@ -39,6 +39,8 @@ Please check the unit tests for more examples.
 To use it with [SBT](http://www.scala-sbt.org/), add the following to your `build.sbt` file:
 
 ```scala
+resolvers += Resolver.sonatypeRepo("public")
+
 libraryDependencies += "com.unstablebuild" %% "autobreaker" % "0.5.1"
 ```
 
