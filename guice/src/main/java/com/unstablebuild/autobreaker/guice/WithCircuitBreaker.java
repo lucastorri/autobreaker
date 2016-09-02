@@ -7,4 +7,6 @@ import java.lang.annotation.*;
 @Inherited
 public @interface WithCircuitBreaker {
 
+    String name() default "";
+
 }
