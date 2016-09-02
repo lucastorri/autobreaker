@@ -89,6 +89,16 @@ class CircuitBreakerProxyTest extends FlatSpec with MustMatchers with ScalaFutur
 
   }
 
+  it must s"ignore methods annotated with ${classOf[NoCircuitBreaker]}" in new context {
+
+    realService.fail = true
+
+    20.times {
+      serviceProxy.withFutureNotWrapped.failed.futureValue must be (error)
+    }
+
+  }
+
   override implicit def patienceConfig: PatienceConfig = PatienceConfig(timeout = Span(500, Millis))
 
   trait context {
@@ -124,6 +134,8 @@ trait TestService {
 
   def withFuture(v: => Int): Future[Int]
 
+  def withFutureNotWrapped: Future[Boolean]
+
   def withoutFuture: String
 
   def withoutFuture(name: String): String
@@ -140,6 +152,10 @@ class ConfigurableTestService(error: Throwable) extends TestService {
 
   override def withFuture(v: => Int): Future[Int] =
     call(if (fail) Future.failed(error) else Future.successful(v * v))
+
+  @NoCircuitBreaker
+  override def withFutureNotWrapped: Future[Boolean] =
+    call(if (fail) Future.failed(error) else Future.successful(true))
 
   override def withoutFuture: String =
     call(if (fail) throw error else "hello")

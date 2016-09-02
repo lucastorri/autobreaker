@@ -36,13 +36,18 @@ class CircuitBreakerHandler(val self: Any, settings: Settings)(implicit ec: Exec
 
     try {
       method.getReturnType match {
-        case `future` => retryAsync()(revealError(breaker.withCircuitBreaker(hideError(future.cast(callMethod)))))
-        case _ => callMethod
+        case `future` if canWrap(method) =>
+          retryAsync()(revealError(breaker.withCircuitBreaker(hideError(future.cast(callMethod)))))
+        case _ =>
+          callMethod
       }
     } catch {
       case e: InvocationTargetException => throw e.getTargetException
     }
   }
+
+  private def canWrap(method: Method): Boolean =
+    !self.getClass.getMethod(method.getName, method.getParameterTypes: _*).isAnnotationPresent(classOf[NoCircuitBreaker])
 
   private def hideError(f: Future[_]): Future[_] =
     f.recover {
