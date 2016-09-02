@@ -33,6 +33,18 @@ serviceWithCircuitBreaker.add(11, 23)
 
 Please check the unit tests for more examples.
 
+### Skipping a specific method
+
+You can prevent a method from being intercept with the `NoCircuitBreaker` annotation. For example:
+
+```scala
+class AnotherImplementation extends MyService {
+  @NoCircuitBreaker
+  override def add(a: Int, b: Int): Future[Int] = Future.failed(new Exception("error"))
+}
+
+```
+
 
 ## Install
 
@@ -41,7 +53,7 @@ To use it with [SBT](http://www.scala-sbt.org/), add the following to your `buil
 ```scala
 resolvers += Resolver.sonatypeRepo("public")
 
-libraryDependencies += "com.unstablebuild" %% "autobreaker" % "0.5.1"
+libraryDependencies += "com.unstablebuild" %% "autobreaker" % "0.5.2"
 ```
 
 
@@ -72,7 +84,7 @@ Please see `atmos` and `akka` documentations for further reference.
 In order to use it, you need to add the following to your dependencies:
 
 ```scala
-libraryDependencies += "com.unstablebuild" %% "autobreaker-guice" % "0.5.1"
+libraryDependencies += "com.unstablebuild" %% "autobreaker-guice" % "0.5.2"
 ```
 
 Afterwards, it can be used like this:
@@ -94,3 +106,31 @@ val service = injector.getInstance(classOf[MyService])
 ```
 
 An `ExecutionContext` and `Scheduler` should be available on your bindings.
+
+
+### Settings
+
+You can inject settings in two ways:
+
+1. Bind a `CircuitBreakerSettings`;
+2. Bind a named `CircuitBreakerSettings`.
+
+For example:
+
+```
+bind(classOf[CircuitBreakerSettings])
+          .toInstance(mySettings)
+
+bind(classOf[CircuitBreakerSettings])
+  .annotatedWith(Names.named("custom-conf"))
+  .toInstance(mySettings)
+```
+
+To use named Settings, you can add the use named to the `WithCircuitBreaker` annotation:
+
+```
+@WithCircuitBreaker(name = "custom-conf")
+class CustomNamedFailureTestService(error: Throwable) extends MyService { ... }
+```
+
+If a Settings instance with the given name is not found, the library will try to use an unnamed one. If it also can't fidn one, it will fall back to `AutoBreaker.defaultSettings`.
