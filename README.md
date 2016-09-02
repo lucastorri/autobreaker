@@ -117,7 +117,7 @@ You can inject settings in two ways:
 
 For example:
 
-```
+```scala
 bind(classOf[CircuitBreakerSettings])
           .toInstance(mySettings)
 
@@ -128,7 +128,7 @@ bind(classOf[CircuitBreakerSettings])
 
 To use named Settings, you can add the use named to the `WithCircuitBreaker` annotation:
 
-```
+```scala
 @WithCircuitBreaker(name = "custom-conf")
 class CustomNamedFailureTestService(error: Throwable) extends MyService { ... }
 ```
