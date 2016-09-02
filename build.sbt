@@ -1,6 +1,6 @@
 lazy val commonSettings = Seq(
   organization := "com.example",
-  version := "0.5.1",
+  version := "0.5.2",
   scalaVersion := "2.11.8",
   organization := "com.unstablebuild",
   organizationName := "unstablebuild.com",
