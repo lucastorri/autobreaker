@@ -53,7 +53,7 @@ To use it with [SBT](http://www.scala-sbt.org/), add the following to your `buil
 ```scala
 resolvers += Resolver.sonatypeRepo("public")
 
-libraryDependencies += "com.unstablebuild" %% "autobreaker" % "0.5.2"
+libraryDependencies += "com.unstablebuild" %% "autobreaker" % "0.5.3"
 ```
 
 
@@ -84,7 +84,7 @@ Please see `atmos` and `akka` documentations for further reference.
 In order to use it, you need to add the following to your dependencies:
 
 ```scala
-libraryDependencies += "com.unstablebuild" %% "autobreaker-guice" % "0.5.2"
+libraryDependencies += "com.unstablebuild" %% "autobreaker-guice" % "0.5.3"
 ```
 
 Afterwards, it can be used like this:
@@ -106,6 +106,8 @@ val service = injector.getInstance(classOf[MyService])
 ```
 
 An `ExecutionContext` and `Scheduler` should be available on your bindings.
+
+You can also use a `AutoBreakerModule` instead of `AbstractModule`, and that will call `AutoBreakerGuice.prepare` for you.
 
 
 ### Settings
@@ -134,3 +136,12 @@ class CustomNamedFailureTestService(error: Throwable) extends MyService { ... }
 ```
 
 If a Settings instance with the given name is not found, the library will try to use an unnamed one. If it also can't fidn one, it will fall back to `AutoBreaker.defaultSettings`.
+
+
+## Release
+
+```bash
+./sbt test guice/test
+./sbt publishSigned guice/publishSigned
+./sbt sonatypeReleaseAll
+```
