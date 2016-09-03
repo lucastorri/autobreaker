@@ -1,6 +1,7 @@
 package com.unstablebuild.autobreaker
 
 import atmos.dsl._
+
 import scala.concurrent.duration._
 
 case class CircuitBreakerSettings(

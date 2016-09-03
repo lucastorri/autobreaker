@@ -17,8 +17,8 @@ class AutoBreakerGuiceTest extends FlatSpec with MustMatchers with ScalaFutures 
 
   it must "wrap annotated classes" in new context {
 
-    override def module = new AbstractModule {
-      override def configure(): Unit = bind(classOf[TestService]).to(classOf[FailingTestService])
+    override def module = new AutoBreakerModule {
+      override def setup(): Unit = bind(classOf[TestService]).to(classOf[FailingTestService])
     }
 
     val service = injector.getInstance(classOf[TestService])
@@ -30,8 +30,8 @@ class AutoBreakerGuiceTest extends FlatSpec with MustMatchers with ScalaFutures 
 
   it must "wrap annotated instances" in new context {
 
-    override def module = new AbstractModule {
-      override def configure(): Unit = bind(classOf[TestService]).toInstance(new FailingTestService)
+    override def module = new AutoBreakerModule {
+      override def setup(): Unit = bind(classOf[TestService]).toInstance(new FailingTestService)
     }
 
     val service = injector.getInstance(classOf[TestService])
@@ -43,8 +43,8 @@ class AutoBreakerGuiceTest extends FlatSpec with MustMatchers with ScalaFutures 
 
   it must "start eager singletons just once" in new context {
 
-    override def module = new AbstractModule {
-      override def configure(): Unit = bind(classOf[EagerService]).asEagerSingleton()
+    override def module = new AutoBreakerModule {
+      override def setup(): Unit = bind(classOf[EagerService]).asEagerSingleton()
     }
 
     injector.getInstance(classOf[EagerService])
@@ -57,8 +57,8 @@ class AutoBreakerGuiceTest extends FlatSpec with MustMatchers with ScalaFutures 
 
     case object MyError extends Exception
 
-    override def module = new AbstractModule {
-      override def configure(): Unit = {
+    override def module = new AutoBreakerModule {
+      override def setup(): Unit = {
         bind(classOf[Settings]).toInstance(AutoBreaker.defaultSettings.copy(knownError = _ == MyError))
         bind(classOf[TestService]).toInstance(new CustomFailureTestService(MyError))
       }
@@ -75,8 +75,8 @@ class AutoBreakerGuiceTest extends FlatSpec with MustMatchers with ScalaFutures 
 
     case object MyError extends Exception
 
-    override def module = new AbstractModule {
-      override def configure(): Unit = {
+    override def module = new AutoBreakerModule {
+      override def setup(): Unit = {
         bind(classOf[Settings])
           .annotatedWith(Names.named("custom-conf"))
           .toInstance(AutoBreaker.defaultSettings.copy(knownError = _ == MyError))
@@ -100,8 +100,8 @@ class AutoBreakerGuiceTest extends FlatSpec with MustMatchers with ScalaFutures 
     case object MyFirstError extends Exception
     case object MySecondError extends Exception
 
-    override def module = new AbstractModule {
-      override def configure(): Unit = {
+    override def module = new AutoBreakerModule {
+      override def setup(): Unit = {
         bind(classOf[Settings])
           .toInstance(AutoBreaker.defaultSettings.copy(knownError = _ == MyFirstError))
 
@@ -126,9 +126,8 @@ class AutoBreakerGuiceTest extends FlatSpec with MustMatchers with ScalaFutures 
 
     lazy val injector =
       Guice.createInjector(
-        AutoBreakerGuice.prepare(
           Modules.combine(
-            BaseModule, module)))
+            BaseModule, module))
 
   }
 

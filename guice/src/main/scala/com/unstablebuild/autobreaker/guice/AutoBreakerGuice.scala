@@ -4,7 +4,7 @@ import java.lang.annotation.Annotation
 
 import akka.actor.Scheduler
 import com.google.inject._
-import com.google.inject.name.{Named, Names}
+import com.google.inject.name.Names
 import com.google.inject.spi._
 import com.typesafe.scalalogging.StrictLogging
 import com.unstablebuild.autobreaker.{AutoBreaker, Settings}
