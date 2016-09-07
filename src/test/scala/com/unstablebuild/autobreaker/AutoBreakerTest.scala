@@ -11,7 +11,7 @@ import org.scalatest.{BeforeAndAfterAll, FlatSpec, MustMatchers}
 import scala.concurrent.Future
 import scala.concurrent.duration._
 
-class CircuitBreakerProxyTest extends FlatSpec with MustMatchers with ScalaFutures with BeforeAndAfterAll {
+class AutoBreakerTest extends FlatSpec with MustMatchers with ScalaFutures with BeforeAndAfterAll {
 
   val system = ActorSystem()
   implicit val dispatcher = system.dispatcher
@@ -99,6 +99,12 @@ class CircuitBreakerProxyTest extends FlatSpec with MustMatchers with ScalaFutur
 
   }
 
+  it must "proxy all parents interfaces" in new context {
+    override lazy val realService: ConfigurableTestService = new ChildConfigurableTestService
+
+    serviceProxy.isInstanceOf[TestService] must be (true)
+  }
+
   override implicit def patienceConfig: PatienceConfig = PatienceConfig(timeout = Span(500, Millis))
 
   trait context {
@@ -178,5 +184,7 @@ class ConfigurableTestService(error: Throwable) extends TestService {
   }
 
 }
+
+class ChildConfigurableTestService extends ConfigurableTestService(new Exception)
 
 case object SpecialError extends Exception
