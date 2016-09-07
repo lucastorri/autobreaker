@@ -2,7 +2,7 @@ package com.unstablebuild.autobreaker.guice
 
 import java.lang.annotation.Annotation
 
-import akka.actor.Scheduler
+import akka.actor.{ActorSystem, Scheduler}
 import com.google.inject._
 import com.google.inject.name.Names
 import com.google.inject.spi._
@@ -56,8 +56,10 @@ object AutoBreakerGuice extends StrictLogging {
 
     @Inject() val injector: Injector = null
 
-    implicit lazy val ec = injector.getInstance(classOf[ExecutionContext])
-    implicit lazy val scheduler = injector.getInstance(classOf[Scheduler])
+    implicit lazy val system = injector.getInstance(classOf[ActorSystem])
+
+    implicit lazy val ec = Try(injector.getInstance(classOf[ExecutionContext])).getOrElse(system.dispatcher)
+    implicit lazy val scheduler = Try(injector.getInstance(classOf[Scheduler])).getOrElse(system.scheduler)
 
     def annotation: WithCircuitBreaker
 

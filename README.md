@@ -53,7 +53,7 @@ To use it with [SBT](http://www.scala-sbt.org/), add the following to your `buil
 ```scala
 resolvers += Resolver.sonatypeRepo("public")
 
-libraryDependencies += "com.unstablebuild" %% "autobreaker" % "0.5.3"
+libraryDependencies += "com.unstablebuild" %% "autobreaker" % "0.5.4"
 ```
 
 
@@ -84,7 +84,7 @@ Please see `atmos` and `akka` documentations for further reference.
 In order to use it, you need to add the following to your dependencies:
 
 ```scala
-libraryDependencies += "com.unstablebuild" %% "autobreaker-guice" % "0.5.3"
+libraryDependencies += "com.unstablebuild" %% "autobreaker-guice" % "0.5.4"
 ```
 
 Afterwards, it can be used like this:

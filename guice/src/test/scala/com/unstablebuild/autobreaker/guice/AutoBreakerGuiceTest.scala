@@ -120,6 +120,23 @@ class AutoBreakerGuiceTest extends FlatSpec with MustMatchers with ScalaFutures 
     result.failed.futureValue must be (MyFirstError)
   }
 
+  it must "use an actor system if dispatcher and scheduler are not avaialable" in {
+
+    val module = new AutoBreakerModule {
+      override def setup(): Unit = {
+        bind(classOf[ActorSystem]).toInstance(BaseModule.system)
+        bind(classOf[TestService]).to(classOf[FailingTestService])
+      }
+    }
+
+    val injector = Guice.createInjector(module)
+    val service = injector.getInstance(classOf[TestService])
+
+    val result = (1 to 10).map(_ => service.message).last
+
+    result.failed.futureValue mustBe a[CircuitBreakerOpenException]
+  }
+
   trait context {
 
     def module: Module
