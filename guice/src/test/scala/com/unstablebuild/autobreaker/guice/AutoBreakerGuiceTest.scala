@@ -120,7 +120,7 @@ class AutoBreakerGuiceTest extends FlatSpec with MustMatchers with ScalaFutures 
     result.failed.futureValue must be (MyFirstError)
   }
 
-  it must "use an actor system if dispatcher and scheduler are not avaialable" in {
+  it must "use an actor system if dispatcher and scheduler are not available" in {
 
     val module = new AutoBreakerModule {
       override def setup(): Unit = {
@@ -135,6 +135,27 @@ class AutoBreakerGuiceTest extends FlatSpec with MustMatchers with ScalaFutures 
     val result = (1 to 10).map(_ => service.message).last
 
     result.failed.futureValue mustBe a[CircuitBreakerOpenException]
+  }
+
+  it must "allow classes with constructors" in new context {
+
+    case object AnError extends Exception
+
+    override def module = new AutoBreakerModule {
+      override def setup(): Unit = {
+        bind(classOf[Settings])
+          .toInstance(AutoBreaker.defaultSettings.copy(knownError = _ == AnError))
+        bind(classOf[Throwable]).toInstance(AnError)
+        bind(classOf[TestService]).to(classOf[CustomFailureTestService])
+      }
+    }
+
+    val service = injector.getInstance(classOf[TestService])
+
+    val result = (1 to 10).map(_ => service.message).last
+
+    result.failed.futureValue must be (AnError)
+
   }
 
   trait context {
@@ -174,7 +195,7 @@ class FailingTestService extends TestService {
 }
 
 @WithCircuitBreaker
-class CustomFailureTestService(error: Throwable) extends TestService {
+class CustomFailureTestService @Inject()(error: Throwable) extends TestService {
   override def message: Future[String] = Future.failed(error)
 }
 
